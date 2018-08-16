@@ -1,15 +1,44 @@
 const express = require("express");
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+
 const port = 3000;
 const app = express();
 
-app.get('/', (req, res) => {
-    res.send('<h1>I love Treehouse :D</h1>')
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+app.use(cookieParser());
+
+const colors = ["red", "orange", "yellow", "green", "blue", "purple"];
+
+app.set("view engine", "pug");
+
+app.get("/", (req, res) => {
+    res.render("index");
 });
 
-app.get('/hello', (req, res) => {
-    res.send('<h1>Hello, Javascript Developer!</h1>')
+app.get("/hello", (req, res) => {
+    res.render("hello", {
+        name: req.cookies.username
+    });
+});
+
+app.post("/hello", (req, res) => {
+    res.cookie('username', req.body.username);
+    res.render('hello', {
+        name: req.body.username
+    });
+});
+
+app.get("/cards", (req, res) => {
+    res.render("card", {
+        prompt: "Who is buried in Grants tomb?",
+        hint: "Think about whose tomb it is.",
+        colors
+    });
 });
 
 app.listen(port, () => {
-    console.log(`The Application is running on localhost ${port}`)
+    console.log(`The Application is running on localhost ${port}`);
 });
